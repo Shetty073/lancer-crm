@@ -1,0 +1,29 @@
+body {
+    margin: 0 !important;
+}
+
+/* customized body scroll bar  */
+body::-webkit-scrollbar {
+    width: 2px !important;
+}
+
+body::-webkit-scrollbar-track {
+    background: #c6c1ff !important;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #000000 !important;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #292929 !important;
+}
+
+
+/* for mobile */
+@media screen and (max-width: 768px) {
+    /* for removing text from buttons with lengthy text on small screens */
+    .big-btn-text {
+        display: none !important;
+    }
+}

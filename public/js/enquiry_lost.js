@@ -9,12 +9,12 @@ document.querySelectorAll('.enquiry-lost-btn').forEach(btn => {
         let deletedTitle = document.querySelector('#deletedTitle').value;
         let deletedMsg = document.querySelector('#deletedMsg').value;
 
-        let redirectUrl = window.location.href;
+        let redirectUrl = '';
 
         try {
             redirectUrl = document.querySelector('#closedRedirectUrl').value;
         } catch (error) {
-            console.log(error);
+            redirectUrl = window.location.href;
         }
 
         const { value: lostRemark } = await Swal.fire({
@@ -39,7 +39,7 @@ document.querySelectorAll('.enquiry-lost-btn').forEach(btn => {
                 text: "You won't be able to revert this!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#4338CA',
+                confirmButtonColor: '#007BFF',
                 cancelButtonColor: '#d33',
                 confirmButtonText: deletedBtnText
             }).then((result) => {

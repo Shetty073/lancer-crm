@@ -36,7 +36,7 @@ class EnquiriesController extends Controller
         // Reference to the Utilities class
         $utilities = $this->utilities;
 
-        $enquiries = Enquiry::paginate(15);
+        $enquiries = Enquiry::paginate(20);
 
         return view('enquiries.index', compact('enquiries', 'utilities'));
     }
@@ -254,12 +254,12 @@ class EnquiriesController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $this->validate($request, [
-            'project_id' => 'required',
+            'project' => 'required',
             'enquiry_status' => 'required',
         ]);
 
         $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
-        $project = Project::where('id', $request->input('project_id'))->first();
+        $project = Project::where('id', $request->input('project'))->first();
         $enquiry = Enquiry::findorfail($id);
         $enquiry->enquiry_status()->associate($status);
         $enquiry->project()->associate($project);

@@ -19,20 +19,20 @@ class Utilities
 
         switch ($status) {
             case 1:
-                $enquiryStatusStyle = 'rounded-full bg-yellow-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-warning';
                 break;
             case 2:
-                $enquiryStatusStyle = 'rounded-full bg-blue-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-primary';
                 break;
             case 3:
-                $enquiryStatusStyle = 'rounded-full bg-gray-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-secondary';
                 break;
             case 4:
-                $enquiryStatusStyle = 'rounded-full bg-red-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-danger';
                 break;
 
             default:
-                $enquiryStatusStyle = 'rounded-full bg-green-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-success';
                 break;
         }
 
@@ -62,11 +62,11 @@ class Utilities
 
         switch ($status) {
             case 1:
-                $enquiryStatusStyle = 'rounded-full bg-green-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-success';
                 break;
 
             default:
-                $enquiryStatusStyle = 'rounded-full bg-red-500 text-white py-1 px-2';
+                $enquiryStatusStyle = 'px-2 py-2 badge badge-danger';
                 break;
         }
 

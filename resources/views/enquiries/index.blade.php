@@ -7,15 +7,17 @@
 @stop
 
 @section('content')
-    <p>All Enquiries</p>
-
-    <div class="card px-3 py-1">
+    <div class="card px-3 py-2">
         @can('enquiry_create')
         <div class="my-3">
-            <a class="btn btn-success float-right" href="{{ route('enquiries.create') }}">+ Add New Enquiry</a>
+            <a class="btn btn-success text-uppercase float-right" href="{{ route('enquiries.create') }}">
+                <i class="fas fa-plus fa-fw"></i>
+                <span class="big-btn-text">Add New Enquiry</span>
+            </a>
         </div>
-        <br>
         @endcan
+        <input type="text" id="searchBox" placeholder="🔍 Search the table below">
+        <br>
 
         <div class="table-responsive">
             <table class="table">
@@ -38,14 +40,18 @@
                         <td>{{ $enquiry->contact_no }}</td>
                         <td>{{ $enquiry->subject }}</td>
                         <td>{{ $enquiry->email }}</td>
-                        <td>{{ $enquiry->enquiry_status->name }}</td>
+                        <td>
+                            <span class="{{ App\Lancer\Utilities::getEnquiryStatusStyle($enquiry->enquiry_status->id) }}">
+                                {{ $enquiry->enquiry_status->status }}
+                            </span>
+                        </td>
                         <td>
                             <div class="dropdown">
                                 <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-boundary="viewport">
                                     ACTIONS
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <div id="{{ $enquiry->id }}" class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     @can('enquiry_show')
                                     <a class="dropdown-item text-primary"
                                         href="{{ route('enquiries.show', ['id' => $enquiry->id]) }}">View</a>
@@ -60,9 +66,9 @@
                                     @endcan
                                     @can('enquiry_delete')
                                     <div class="dropdown-divider"></div>
-                                    <button class="enquiry-lost-btn btn btn-warning">
+                                    <a role="button" class="enquiry-lost-btn dropdown-item text-danger" style="">
                                         Mark As Lost
-                                    </button>
+                                    </a>
                                     @endcan
                                 </div>
                             </div>
@@ -77,11 +83,22 @@
 
                 </tbody>
             </table>
+            @if (count($enquiries) < 1)
+                <div class="px-4 py-5 mx-auto text-secondary">
+                    No results found!
+                </div>
+            @endif
+        </div>
+
+        {{-- Pagination links --}}
+        <div class="mt-4">
+            {{ $enquiries->links() }}
         </div>
 
     </div>
 @stop
 
 @section('js')
+    <script src="{{ asset('js/table_utils.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/enquiry_lost.js') }}"></script>
 @stop

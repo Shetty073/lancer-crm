@@ -250,7 +250,7 @@ return [
         ],
         [
             'text'    => 'enquiries',
-            'url'         => 'enquiries',
+            'url'         => 'enquiries/*',
             'icon'    => 'fas fa-fw fa-question-circle',
             'submenu' => [
                 [
@@ -267,7 +267,7 @@ return [
         ],
         [
             'text'    => 'clients',
-            'url'     => 'clients',
+            'url'     => 'clients/*',
             'icon'    => 'fas fa-fw fa-users',
             'submenu' => [
                 [
@@ -284,7 +284,7 @@ return [
         ],
         [
             'text'    => 'projects',
-            'url'     => 'projects',
+            'url'     => 'projects/*',
             'icon'    => 'fas fa-fw fa-project-diagram',
             'submenu' => [
                 [
@@ -302,7 +302,7 @@ return [
         ['header' => 'finances'],
         [
             'text'    => 'dues',
-            'url'     => 'dues',
+            'url'     => 'dues/*',
             'icon'    => 'fas fa-fw fa-cash-register',
             'submenu' => [
                 [
@@ -319,7 +319,7 @@ return [
         ],
         [
             'text'    => 'Payments',
-            'url'     => 'payments',
+            'url'     => 'payments/*',
             'icon'    => 'fas fa-fw fa-piggy-bank',
             'submenu' => [
                 [
@@ -336,7 +336,7 @@ return [
         ],
         [
             'text'    => 'expenses',
-            'url'     => 'expenses',
+            'url'     => 'expenses/*',
             'icon'    => 'fas fa-fw fa-money-bill',
             'submenu' => [
                 [
@@ -364,7 +364,7 @@ return [
         ],
         [
             'text'    => 'users',
-            'url'     => 'useraccount',
+            'url'     => 'useraccount/*',
             'icon'    => 'fas fa-fw fa-users-cog',
             'submenu' => [
                 [
@@ -422,6 +422,16 @@ return [
     */
 
     'plugins' => [
+        'Base' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => asset('css/base.css'),
+                ],
+            ],
+        ],
         'Datatables' => [
             'active' => false,
             'files' => [
@@ -473,7 +483,7 @@ return [
                 [
                     'type' => 'js',
                     'asset' => true,
-                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@8',
+                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@11',
                 ],
             ],
         ],
