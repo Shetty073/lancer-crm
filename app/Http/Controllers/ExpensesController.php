@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\PaymentMode;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExpensesController extends Controller
 {
@@ -50,20 +52,29 @@ class ExpensesController extends Controller
             'date_of_payment' => 'required',
         ]);
 
-        $expense_category = ExpenseCategory::findorfail($request->input('expense_category'));
+        DB::beginTransaction();
+        try {
+            $expense_category = ExpenseCategory::findorfail($request->input('expense_category'));
 
-        $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
+            $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
 
-        $expense = Expense::create([
-            'payee' => $request->input('payee'),
-            'amount_paid' => $request->input('amount_paid'),
-            'date_of_payment' => $request->input('date_of_payment'),
-            'remark' => $request->input('remark'),
-        ]);
-        $expense->expense_category()->associate($expense_category);
-        $expense->payment_mode()->associate($payment_mode);
-        $expense->createdBy()->associate(auth()->user());
-        $expense->saveQuietly();
+            $expense = Expense::create([
+                'payee' => $request->input('payee'),
+                'amount_paid' => $request->input('amount_paid'),
+                'date_of_payment' => $request->input('date_of_payment'),
+                'remark' => $request->input('remark'),
+            ]);
+            $expense->expense_category()->associate($expense_category);
+            $expense->payment_mode()->associate($payment_mode);
+            $expense->createdBy()->associate(auth()->user());
+            $expense->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('expenses.index'));
     }
@@ -100,21 +111,30 @@ class ExpensesController extends Controller
             'date_of_payment' => 'required',
         ]);
 
-        $expense_category = ExpenseCategory::findorfail($request->input('expense_category'));
+        DB::beginTransaction();
+        try {
+            $expense_category = ExpenseCategory::findorfail($request->input('expense_category'));
 
-        $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
+            $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
 
-        $expense = Expense::findorfail($id);
-        $expense->update([
-            'payee' => $request->input('payee'),
-            'amount_paid' => $request->input('amount_paid'),
-            'date_of_payment' => $request->input('date_of_payment'),
-            'remark' => $request->input('remark'),
-        ]);
-        $expense->expense_category()->associate($expense_category);
-        $expense->payment_mode()->associate($payment_mode);
-        $expense->lastEditedBy()->associate(auth()->user());
-        $expense->saveQuietly();
+            $expense = Expense::findorfail($id);
+            $expense->update([
+                'payee' => $request->input('payee'),
+                'amount_paid' => $request->input('amount_paid'),
+                'date_of_payment' => $request->input('date_of_payment'),
+                'remark' => $request->input('remark'),
+            ]);
+            $expense->expense_category()->associate($expense_category);
+            $expense->payment_mode()->associate($payment_mode);
+            $expense->lastEditedBy()->associate(auth()->user());
+            $expense->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('expenses.index'));
     }

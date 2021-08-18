@@ -90,7 +90,7 @@ document.querySelector('.add-followup-btn').addEventListener('click', async () =
 // edit followups
 document.querySelectorAll('.follow-up-edit-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
-        let followupId = e.target.parentNode.id;
+        let followupId = e.currentTarget.parentNode.id;
 
         let oldDateTime = document.querySelector(`#date_time${followupId}`).value;
         let oldRemark = document.querySelector(`#remark${followupId}`).value;

@@ -107,12 +107,6 @@ class AccountsController extends Controller
         $user->setPasswordAttribute($request->input('password'));
         $user->save();
 
-        // if(Hash::check($request->input('current_password'), $user->password)) {
-
-        // } else {
-        //     return back()->withErrors();
-        // }
-
         return back()->with('success', 'You have successfully changed your password.');
     }
 }

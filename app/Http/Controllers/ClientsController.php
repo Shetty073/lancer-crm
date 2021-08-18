@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Lancer\Utilities;
 use App\Models\Client;
 use App\Models\Configuration;
 use App\Models\Payment;
 use App\Models\PaymentMode;
 use App\Models\Project;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientsController extends Controller
 {
@@ -52,44 +53,54 @@ class ClientsController extends Controller
             'subject' => 'required',
         ]);
 
-        $client = Client::create([
-            'name' => $request->input('name'),
-            'business_name' => $request->input('business_name'),
-            'email' => $request->input('email'),
-            'contact_no' => $request->input('contact_no'),
-            'subject' => $request->input('subject'),
-            'carpet_area' => $request->input('carpet_area'),
-            'agreement_value' => $request->input('agreement_value'),
-            'booking_amount' => $request->input('booking_amount'),
-            'remark' => $request->input('remark'),
-            'rating' => $request->input('rating'),
-        ]);
+        DB::beginTransaction();
+        try {
+            $client = Client::create([
+                'name' => $request->input('name'),
+                'business_name' => $request->input('business_name'),
+                'email' => $request->input('email'),
+                'contact_no' => $request->input('contact_no'),
+                'subject' => $request->input('subject'),
+                'carpet_area' => $request->input('carpet_area'),
+                'agreement_value' => $request->input('agreement_value'),
+                'booking_amount' => $request->input('booking_amount'),
+                'remark' => $request->input('remark'),
+                'rating' => $request->input('rating'),
+            ]);
 
-        $project = Project::where('id', $request->input('project_id'))->first();
-        $client->project()->associate($project);
+            $project = Project::where('id', $request->input('project'))->first();
+            $client->project()->associate($project);
 
-        $configuration = Configuration::where('id', $request->input('configuration'))->first();
-        $client->configuration()->associate($configuration);
+            $configuration = Configuration::where('id', $request->input('configuration'))->first();
+            $client->configuration()->associate($configuration);
 
-        $payment_mode = PaymentMode::where('id', $request->input('payment_mode'))->first();
-        $client->payment_mode()->associate($payment_mode);
+            $payment_mode = PaymentMode::where('id', $request->input('payment_mode'))->first();
+            $client->payment_mode()->associate($payment_mode);
 
-        $client->closedBy()->associate(auth()->user());
+            $client->closedBy()->associate(auth()->user());
 
-        $client->save();
+            $client->save();
 
-        $payment_mode = PaymentMode::findorfail($request->input('due_payment_mode'));
+            $payment_mode = PaymentMode::findorfail($request->input('due_payment_mode'));
 
-        $payment = Payment::create([
-            'amount' => $request->input('brokerage_amount'),
-            'due_date' => $request->input('due_date'),
-            'remark' => $request->input('brokerage_remark'),
-            'payer' => $project->name,
-        ]);
-        $payment->payment_mode()->associate($payment_mode);
-        $payment->client()->associate($client);
-        $payment->createdBy()->associate(auth()->user());
-        $payment->saveQuietly();
+            $payment = Payment::create([
+                'amount' => $request->input('brokerage_amount'),
+                'due_date' => $request->input('due_date'),
+                'remark' => $request->input('brokerage_remark'),
+                'payer' => $project->name,
+            ]);
+
+            $payment->payment_mode()->associate($payment_mode);
+            $payment->client()->associate($client);
+            $payment->createdBy()->associate(auth()->user());
+            $payment->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('clients.index'));
     }
@@ -138,36 +149,45 @@ class ClientsController extends Controller
             'subject' => 'required',
         ]);
 
-        $client = Client::findorfail($id);
-        $client->update([
-            'name' => $request->input('name'),
-            'business_name' => $request->input('business_name'),
-            'email' => $request->input('email'),
-            'contact_no' => $request->input('contact_no'),
-            'subject' => $request->input('subject'),
-            'carpet_area' => $request->input('carpet_area'),
-            'agreement_value' => $request->input('agreement_value'),
-            'booking_amount' => $request->input('booking_amount'),
-            'remark' => $request->input('remark'),
-            'rating' => $request->input('rating'),
-        ]);
+        DB::beginTransaction();
+        try {
+            $client = Client::findorfail($id);
+            $client->update([
+                'name' => $request->input('name'),
+                'business_name' => $request->input('business_name'),
+                'email' => $request->input('email'),
+                'contact_no' => $request->input('contact_no'),
+                'subject' => $request->input('subject'),
+                'carpet_area' => $request->input('carpet_area'),
+                'agreement_value' => $request->input('agreement_value'),
+                'booking_amount' => $request->input('booking_amount'),
+                'remark' => $request->input('remark'),
+                'rating' => $request->input('rating'),
+            ]);
 
-        $project = Project::where('id', $request->input('project_id'))->first();
-        $client->project()->associate($project);
+            $project = Project::where('id', $request->input('project'))->first();
+            $client->project()->associate($project);
 
-        $configuration = Configuration::where('id', $request->input('configuration'))->first();
-        $client->configuration()->associate($configuration);
+            $configuration = Configuration::where('id', $request->input('configuration'))->first();
+            $client->configuration()->associate($configuration);
 
-        $payment_mode = PaymentMode::where('id', $request->input('payment_mode'))->first();
-        $client->payment_mode()->associate($payment_mode);
+            $payment_mode = PaymentMode::where('id', $request->input('payment_mode'))->first();
+            $client->payment_mode()->associate($payment_mode);
 
-        if($request->has('is_active')) {
-            $client->is_active = true;
-            $client->save();
-        } else {
-            $client->is_active = false;
-            $client->save();
+            if($request->has('is_active')) {
+                $client->is_active = true;
+                $client->save();
+            } else {
+                $client->is_active = false;
+                $client->save();
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
         }
+        DB::commit();
 
         return redirect(route('clients.index'));
     }

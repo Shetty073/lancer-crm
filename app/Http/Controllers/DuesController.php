@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\PaymentMode;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 class DuesController extends Controller
 {
@@ -49,17 +50,26 @@ class DuesController extends Controller
             'due_date' => 'required',
         ]);
 
-        $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
+        DB::beginTransaction();
+        try {
+            $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
 
-        $due = Payment::create([
-            'payer' => $request->input('payer'),
-            'amount' => $request->input('amount'),
-            'remark' => $request->input('remark'),
-            'due_date' => $request->input('due_date'),
-        ]);
-        $due->payment_mode()->associate($payment_mode);
-        $due->createdBy()->associate(auth()->user());
-        $due->saveQuietly();
+            $due = Payment::create([
+                'payer' => $request->input('payer'),
+                'amount' => $request->input('amount'),
+                'remark' => $request->input('remark'),
+                'due_date' => $request->input('due_date'),
+            ]);
+            $due->payment_mode()->associate($payment_mode);
+            $due->createdBy()->associate(auth()->user());
+            $due->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('dues.index'));
     }
@@ -109,18 +119,26 @@ class DuesController extends Controller
             'due_date' => 'required',
         ]);
 
-        $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
-
-        $due = Payment::findorfail($id);
-        $due->update([
-            'payer' => $request->input('payer'),
-            'amount' => $request->input('amount'),
-            'remark' => $request->input('remark'),
-            'due_date' => $request->input('due_date'),
-        ]);
-        $due->payment_mode()->associate($payment_mode);
-        $due->lastEditedBy()->associate(auth()->user());
-        $due->saveQuietly();
+        DB::beginTransaction();
+        try {
+            $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
+            $due = Payment::findorfail($id);
+            $due->update([
+                'payer' => $request->input('payer'),
+                'amount' => $request->input('amount'),
+                'remark' => $request->input('remark'),
+                'due_date' => $request->input('due_date'),
+            ]);
+            $due->payment_mode()->associate($payment_mode);
+            $due->lastEditedBy()->associate(auth()->user());
+            $due->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('dues.index'));
     }

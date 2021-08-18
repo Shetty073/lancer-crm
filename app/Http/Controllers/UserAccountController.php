@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 class UserAccountController extends Controller
@@ -47,26 +49,35 @@ class UserAccountController extends Controller
             'role' => 'required',
         ]);
 
-        $role = Role::findorfail($request->input('role'));
+        DB::beginTransaction();
+        try {
+            $role = Role::findorfail($request->input('role'));
 
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => '',
-        ]);
-        $user->setPasswordAttribute($request->input('password'));
-        $user->assignRole($role);
-        $user->saveQuietly();
-
-        // handle image if its present
-        if ($request->hasFile('photo')) {
-            $fileName = $request->file('photo')->getClientOriginalName();
-            $fileExtension = $request->file('photo')->getClientOriginalExtension();
-            $fileNameToStore = $fileName . '_' . $user->id . '_' . time() . '.' . $fileExtension;
-            $path = $request->file('photo')->storeAs('public/profile_picture', $fileNameToStore);
-            $user->photo_url = $fileNameToStore;
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => '',
+            ]);
+            $user->setPasswordAttribute($request->input('password'));
+            $user->assignRole($role);
             $user->saveQuietly();
+
+            // handle image if its present
+            if ($request->hasFile('photo')) {
+                $fileName = $request->file('photo')->getClientOriginalName();
+                $fileExtension = $request->file('photo')->getClientOriginalExtension();
+                $fileNameToStore = $fileName . '_' . $user->id . '_' . time() . '.' . $fileExtension;
+                $path = $request->file('photo')->storeAs('public/profile_picture', $fileNameToStore);
+                $user->photo_url = $fileNameToStore;
+                $user->saveQuietly();
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
         }
+        DB::commit();
 
         return redirect(route('useraccounts.index'));
     }
@@ -114,34 +125,43 @@ class UserAccountController extends Controller
             'role' => 'required',
         ]);
 
-        $role = Role::findorfail($request->input('role'));
-        $user = User::findorfail($id);
+        DB::beginTransaction();
+        try {
+            $role = Role::findorfail($request->input('role'));
+            $user = User::findorfail($id);
 
-        $user->update([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => '',
-        ]);
-        $user->setPasswordAttribute($request->input('password'));
-        $user->assignRole($role);
-        $user->saveQuietly();
-
-        // handle image if its present
-        if ($request->hasFile('photo')) {
-            // delete old photo if present
-            if($user->photo_url !== null) {
-                $file_path = public_path('storage/profile_picture/' . $user->photo_url);
-                @unlink($file_path);
-            }
-
-            // now add new photo
-            $fileName = $request->file('photo')->getClientOriginalName();
-            $fileExtension = $request->file('photo')->getClientOriginalExtension();
-            $fileNameToStore = $fileName . '_' . $user->id . '_' . time() . '.' . $fileExtension;
-            $path = $request->file('photo')->storeAs('public/profile_picture', $fileNameToStore);
-            $user->photo_url = $fileNameToStore;
+            $user->update([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => '',
+            ]);
+            $user->setPasswordAttribute($request->input('password'));
+            $user->assignRole($role);
             $user->saveQuietly();
+
+            // handle image if its present
+            if ($request->hasFile('photo')) {
+                // delete old photo if present
+                if($user->photo_url !== null) {
+                    $file_path = public_path('storage/profile_picture/' . $user->photo_url);
+                    @unlink($file_path);
+                }
+
+                // now add new photo
+                $fileName = $request->file('photo')->getClientOriginalName();
+                $fileExtension = $request->file('photo')->getClientOriginalExtension();
+                $fileNameToStore = $fileName . '_' . $user->id . '_' . time() . '.' . $fileExtension;
+                $path = $request->file('photo')->storeAs('public/profile_picture', $fileNameToStore);
+                $user->photo_url = $fileNameToStore;
+                $user->saveQuietly();
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
         }
+        DB::commit();
 
         return redirect(route('useraccounts.index'));
     }

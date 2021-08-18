@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProjectsController extends Controller
 {
@@ -42,10 +44,19 @@ class ProjectsController extends Controller
             'details' => 'required',
         ]);
 
-        Project::create([
-            'name' => $request->input('name'),
-            'details' => $request->input('details'),
-        ]);
+        DB::beginTransaction();
+        try {
+            Project::create([
+                'name' => $request->input('name'),
+                'details' => $request->input('details'),
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('projects.index'));
     }
@@ -90,12 +101,20 @@ class ProjectsController extends Controller
             'details' => 'required',
         ]);
 
-        $project = Project::findorfail($id);
-
-        $project->update([
-            'name' => $request->input('name'),
-            'details' => $request->input('details'),
-        ]);
+        DB::beginTransaction();
+        try {
+            $project = Project::findorfail($id);
+            $project->update([
+                'name' => $request->input('name'),
+                'details' => $request->input('details'),
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('projects.show', ['id' => $project->id]));
     }

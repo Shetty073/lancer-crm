@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\PaymentMode;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentsController extends Controller
 {
@@ -47,17 +49,25 @@ class PaymentsController extends Controller
             'date_of_payment' => 'required',
         ]);
 
-        $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
-
-        $payment = Payment::create([
-            'payer' => $request->input('payer'),
-            'amount' => $request->input('amount'),
-            'remark' => $request->input('remark'),
-            'date_of_payment' => $request->input('date_of_payment'),
-        ]);
-        $payment->createdBy()->associate(auth()->user());
-        $payment->payment_mode()->associate($payment_mode);
-        $payment->saveQuietly();
+        DB::beginTransaction();
+        try {
+            $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
+            $payment = Payment::create([
+                'payer' => $request->input('payer'),
+                'amount' => $request->input('amount'),
+                'remark' => $request->input('remark'),
+                'date_of_payment' => $request->input('date_of_payment'),
+            ]);
+            $payment->createdBy()->associate(auth()->user());
+            $payment->payment_mode()->associate($payment_mode);
+            $payment->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('payments.index'));
     }
@@ -92,18 +102,26 @@ class PaymentsController extends Controller
             'date_of_payment' => 'required',
         ]);
 
-        $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
-
-        $payment = Payment::findorfail($id);
-        $payment->update([
-            'payer' => $request->input('payer'),
-            'amount' => $request->input('amount'),
-            'remark' => $request->input('remark'),
-            'date_of_payment' => $request->input('date_of_payment'),
-        ]);
-        $payment->payment_mode()->associate($payment_mode);
-        $payment->lastEditedBy()->associate(auth()->user());
-        $payment->saveQuietly();
+        DB::beginTransaction();
+        try {
+            $payment_mode = PaymentMode::findorfail($request->input('payment_mode'));
+            $payment = Payment::findorfail($id);
+            $payment->update([
+                'payer' => $request->input('payer'),
+                'amount' => $request->input('amount'),
+                'remark' => $request->input('remark'),
+                'date_of_payment' => $request->input('date_of_payment'),
+            ]);
+            $payment->payment_mode()->associate($payment_mode);
+            $payment->lastEditedBy()->associate(auth()->user());
+            $payment->saveQuietly();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('payments.index'));
     }

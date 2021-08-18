@@ -7,7 +7,7 @@
     @can('enquiry_create')
     <div id="{{ $enquiry->id }}" class="my-3">
         @can('enquiry_delete')
-        <button class="entry-delete-btn btn btn-success text-uppercase float-right ml-2">
+        <button class="entry-delete-btn btn btn-danger text-uppercase float-right ml-2">
             <i class="fas fa-trash-alt fa-fw"></i>
             <span class="big-btn-text">Mark This Enquiry As Lost</span>
         </button>
@@ -21,7 +21,7 @@
         @endif
         @endcan
         @can('enquiry_create')
-        <a class="btn btn-danger text-uppercase float-right" href="{{ route('enquiries.create') }}">
+        <a class="btn btn-success text-uppercase float-right" href="{{ route('enquiries.create') }}">
             <i class="fas fa-plus fa-fw"></i>
             <span class="big-btn-text">Add New Enquiry</span>
         </a>
@@ -162,7 +162,9 @@
                                 <ul class="timeline">
                                     @foreach ($followups as $followup)
                                     <li id="{{ $followup->id }}" class="event" data-date="{{ $followup->date_time->format('d-M-Y - h:i a') }}">
-                                        <h3>{{ $followup->outcome }}</h3>
+                                        @if (isset($followup->outcome))
+                                            <h3>Outcome: <b>{{ $followup->outcome }}</b></h3>
+                                        @endif
                                         <p>{{ $followup->remark }}</p>
                                         @can('followup_edit')
                                         <button type="button" class="follow-up-edit-btn btn btn-primary">

@@ -11,6 +11,7 @@ use App\Models\PaymentMode;
 use App\Models\Project;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -77,27 +78,36 @@ class EnquiriesController extends Controller
             ]);
         }
 
-        $enquiry = Enquiry::create([
-            'name' => $request->input('name'),
-            'business_name' => $request->input('business_name'),
-            'email' => $request->input('email'),
-            'contact_no' => $request->input('contact_no'),
-            'subject' => $request->input('subject'),
-        ]);
+        DB::beginTransaction();
+        try {
+            $enquiry = Enquiry::create([
+                'name' => $request->input('name'),
+                'business_name' => $request->input('business_name'),
+                'email' => $request->input('email'),
+                'contact_no' => $request->input('contact_no'),
+                'subject' => $request->input('subject'),
+            ]);
 
-        $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
-        $enquiry->enquiry_status()->associate($status);
+            $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
+            $enquiry->enquiry_status()->associate($status);
 
-        $project = Project::where('id', $request->input('project'))->first();
-        $enquiry->project()->associate($project);
+            $project = Project::where('id', $request->input('project'))->first();
+            $enquiry->project()->associate($project);
 
-        $configuration = Configuration::where('id', $request->input('configuration'))->first();
-        $enquiry->configuration()->associate($configuration);
+            $configuration = Configuration::where('id', $request->input('configuration'))->first();
+            $enquiry->configuration()->associate($configuration);
 
-        $budget_range = BudgetRange::where('id', $request->input('budget_range'))->first();
-        $enquiry->budget_range()->associate($budget_range);
+            $budget_range = BudgetRange::where('id', $request->input('budget_range'))->first();
+            $enquiry->budget_range()->associate($budget_range);
 
-        $enquiry->save();
+            $enquiry->save();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('enquiries.index'));
     }
@@ -122,6 +132,7 @@ class EnquiriesController extends Controller
             // $page_id = $change->page_id;
             $leadgen_id = $change->leadgen_id;
 
+            DB::beginTransaction();
             try {
                 $lead_response = Http::get(Utilities::getLeadDetailsEndpoint($leadgen_id));
                 $lead_data = $lead_response->object();
@@ -159,8 +170,10 @@ class EnquiriesController extends Controller
                     $message->to(Utilities::SALES_EMAIL, Utilities::SALES_RECEIVER_NAME)->subject('New lead from facebook ad campaign');
                 });
             } catch (Exception $e) {
+                DB::rollBack();
                 Log::error(print_r($e, true));
             }
+            DB::commit();
 
         }
     }
@@ -225,28 +238,37 @@ class EnquiriesController extends Controller
             'enquiry_status' => 'required',
         ]);
 
-        $enquiry = Enquiry::where('id', $id)->first();
-        $enquiry->update([
-            'name' => $request->input('name'),
-            'business_name' => $request->input('business_name'),
-            'email' => $request->input('email'),
-            'contact_no' => $request->input('contact_no'),
-            'subject' => $request->input('subject'),
-        ]);
+        DB::beginTransaction();
+        try {
+            $enquiry = Enquiry::where('id', $id)->first();
+            $enquiry->update([
+                'name' => $request->input('name'),
+                'business_name' => $request->input('business_name'),
+                'email' => $request->input('email'),
+                'contact_no' => $request->input('contact_no'),
+                'subject' => $request->input('subject'),
+            ]);
 
-        $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
-        $enquiry->enquiry_status()->associate($status);
+            $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
+            $enquiry->enquiry_status()->associate($status);
 
-        $project = Project::where('id', $request->input('project'))->first();
-        $enquiry->project()->associate($project);
+            $project = Project::where('id', $request->input('project'))->first();
+            $enquiry->project()->associate($project);
 
-        $configuration = Configuration::where('id', $request->input('configuration'))->first();
-        $enquiry->configuration()->associate($configuration);
+            $configuration = Configuration::where('id', $request->input('configuration'))->first();
+            $enquiry->configuration()->associate($configuration);
 
-        $budget_range = BudgetRange::where('id', $request->input('budget_range'))->first();
-        $enquiry->budget_range()->associate($budget_range);
+            $budget_range = BudgetRange::where('id', $request->input('budget_range'))->first();
+            $enquiry->budget_range()->associate($budget_range);
 
-        $enquiry->save();
+            $enquiry->save();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('enquiries.index'));
     }
@@ -258,12 +280,21 @@ class EnquiriesController extends Controller
             'enquiry_status' => 'required',
         ]);
 
-        $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
-        $project = Project::where('id', $request->input('project'))->first();
-        $enquiry = Enquiry::findorfail($id);
-        $enquiry->enquiry_status()->associate($status);
-        $enquiry->project()->associate($project);
-        $enquiry->save();
+        DB::beginTransaction();
+        try {
+            $status = EnquiryStatus::where('id', $request->input('enquiry_status'))->first();
+            $project = Project::where('id', $request->input('project'))->first();
+            $enquiry = Enquiry::findorfail($id);
+            $enquiry->enquiry_status()->associate($status);
+            $enquiry->project()->associate($project);
+            $enquiry->save();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect(route('enquiries.show', ['id' => $id]))->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return redirect(route('enquiries.show', ['id' => $id]));
     }

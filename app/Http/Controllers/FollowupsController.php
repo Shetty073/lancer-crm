@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Enquiry;
 use App\Models\FollowUp;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FollowupsController extends Controller
 {
@@ -18,15 +20,24 @@ class FollowupsController extends Controller
     {
         $data = json_decode($request->getContent());
 
-        $enquiry = Enquiry::findorfail($data->enquiry_id);
-        $follow_up = FollowUp::create([
-            'date_time' => $data->date_time,
-            'remark' => $data->remark,
-            'outcome' => $data->outcome,
-        ]);
+        DB::beginTransaction();
+        try {
+            $enquiry = Enquiry::findorfail($data->enquiry_id);
+            $follow_up = FollowUp::create([
+                'date_time' => $data->date_time,
+                'remark' => $data->remark,
+                'outcome' => $data->outcome,
+            ]);
 
-        $follow_up->enquiry()->associate($enquiry);
-        $follow_up->save();
+            $follow_up->enquiry()->associate($enquiry);
+            $follow_up->save();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return back();
     }
@@ -42,13 +53,22 @@ class FollowupsController extends Controller
     {
         $data = json_decode($request->getContent());
 
-        $follow_up = FollowUp::findorfail($id);
-        $follow_up->update([
-            'date_time' => $data->date_time,
-            'remark' => $data->remark,
-            'outcome' => $data->outcome,
-        ]);
-        $follow_up->save();
+        DB::beginTransaction();
+        try {
+            $follow_up = FollowUp::findorfail($id);
+            $follow_up->update([
+                'date_time' => $data->date_time,
+                'remark' => $data->remark,
+                'outcome' => $data->outcome,
+            ]);
+            $follow_up->save();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors([
+                'db_error' => $e->getMessage(),
+            ]);
+        }
+        DB::commit();
 
         return back();
     }
