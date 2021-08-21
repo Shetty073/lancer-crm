@@ -1,9 +1,10 @@
 # lancer-crm
+
  Laravel based CRM for real estate channel partners for client management.
 
-# Screenshots
+## Screenshots
 
-![Enquiries Index Page](screens/0.png)
-![Enquiries Index Page](screens/1.png)
-![Enquiries Index Page](screens/2.png)
-![Enquiries Index Page](screens/3.png)
+![Screen 0](screens/0.png)
+![Screen 1](screens/1.png)
+![Screen 2](screens/2.png)
+![Screen 3](screens/3.png)
