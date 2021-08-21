@@ -116,7 +116,7 @@
             <div class="row">
                 <div class="form-group col-sm-3">
                     <label class="text-capitalize" for="enquiry_status">Status</label>
-                    <select class="form-control js-example-basic-single" id="enquiry_status" name="enquiry_status" required>
+                    <select class="form-control js-example-basic-single" id="enquiry_status" name="enquiry_status" @if($enquiry->enquiry_status->id > 3) disabled @endif required>
                         @foreach ($enquiry_statuses as $status)
                             <option value="{{ $status->id }}" @if(isset($enquiry)) @if($status->id == $enquiry->enquiry_status->id) selected @endif @endif>{{ $status->status }}</option>
                         @endforeach
@@ -124,7 +124,7 @@
                 </div>
                 <div class="form-group col-sm-3">
                     <label class="text-capitalize" for="project">Project</label>
-                    <select class="form-control js-example-basic-single" id="project" name="project" required>
+                    <select class="form-control js-example-basic-single" id="project" name="project" @if($enquiry->enquiry_status->id > 3) disabled @endif required>
                         @foreach ($projects as $project)
                             <option value="{{ $project->id }}" @if(isset($enquiry->project->id)) @if($project->id == $enquiry->project->id) selected @endif @endif>{{ $project->name }}</option>
                         @endforeach
@@ -133,8 +133,10 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" class="btn btn-success" value="Update">
-                <a class="btn btn-danger ml-3" href="">Cancel</a>
+                @if($enquiry->enquiry_status->id < 4)
+                    <input type="submit" class="btn btn-success" value="Update">
+                    <a class="btn btn-danger ml-3" href="">Cancel</a>
+                @endif
             </div>
         </form>
     </div>
@@ -162,14 +164,16 @@
                                 <ul class="timeline">
                                     @foreach ($followups as $followup)
                                     <li id="{{ $followup->id }}" class="event" data-date="{{ $followup->date_time->format('d-M-Y - h:i a') }}">
-                                        @if (isset($followup->outcome))
-                                            <h3>Outcome: <b>{{ $followup->outcome }}</b></h3>
+                                        @if($followup->outcome != null)
+                                            <h3><b>Outcome: {{ $followup->outcome ?? 'None' }}</b></h3>
                                         @endif
                                         <p>{{ $followup->remark }}</p>
                                         @can('followup_edit')
+                                        @if($enquiry->enquiry_status->id < 4)
                                         <button type="button" class="follow-up-edit-btn btn btn-primary">
                                             <i class="fas fa-edit fa-fw"></i>
                                         </button>
+                                        @endif
                                         <input type="hidden" id="editfollowupurl{{ $followup->id }}" value="{{ route('followups.update', ['id' => $followup->id]) }}">
                                         @endcan
                                         @can('followup_delete')

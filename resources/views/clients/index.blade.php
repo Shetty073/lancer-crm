@@ -63,8 +63,8 @@
                                         href="{{ route('clients.edit', ['id' => $client->id]) }}">Edit</a>
                                     @endcan
                                     @can('client_delete')
-                                    <div class="dropdown-divider"></div>
                                     @if(!$client->is_active)
+                                        <div class="dropdown-divider"></div>
                                         <a role="button" class="entry-delete-btn dropdown-item text-danger" style="">
                                             Delete This Client
                                         </a>

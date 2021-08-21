@@ -252,16 +252,19 @@ return [
             'text'    => 'enquiries',
             'url'         => 'enquiries/*',
             'icon'    => 'fas fa-fw fa-question-circle',
+            'can' => 'enquiry_access',
             'submenu' => [
                 [
                     'text' => 'all_enquiries',
                     'url'  => 'enquiries',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => 'enquiry_show',
                 ],
                 [
                     'text' => 'add_enquiry',
                     'url'  => 'enquiries/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => 'enquiry_create',
                 ],
             ],
         ],
@@ -269,16 +272,19 @@ return [
             'text'    => 'clients',
             'url'     => 'clients/*',
             'icon'    => 'fas fa-fw fa-users',
+            'can' => 'client_access',
             'submenu' => [
                 [
                     'text' => 'all_clients',
                     'url'  => 'clients',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => 'client_show',
                 ],
                 [
                     'text' => 'add_client',
                     'url'  => 'clients/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => 'client_create',
                 ],
             ],
         ],
@@ -286,34 +292,43 @@ return [
             'text'    => 'projects',
             'url'     => 'projects/*',
             'icon'    => 'fas fa-fw fa-project-diagram',
+            'can' => 'project_access',
             'submenu' => [
                 [
                     'text' => 'all_projects',
                     'url'  => 'projects',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => 'project_show',
                 ],
                 [
                     'text' => 'add_project',
                     'url'  => 'projects/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => 'project_create',
                 ],
             ],
         ],
-        ['header' => 'finances'],
+        [
+            'header' => 'finances',
+            'can' => 'payment_access',
+        ],
         [
             'text'    => 'dues',
             'url'     => 'dues/*',
             'icon'    => 'fas fa-fw fa-cash-register',
+            'can' => 'payment_access',
             'submenu' => [
                 [
                     'text' => 'all_dues',
                     'url'  => 'dues',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => 'payment_show',
                 ],
                 [
                     'text' => 'add_due',
                     'url'  => 'dues/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => 'payment_create',
                 ],
             ],
         ],
@@ -321,16 +336,19 @@ return [
             'text'    => 'Payments',
             'url'     => 'payments/*',
             'icon'    => 'fas fa-fw fa-piggy-bank',
+            'can' => 'payment_access',
             'submenu' => [
                 [
                     'text' => 'all_payments',
                     'url'  => 'payments',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => 'payment_show',
                 ],
                 [
                     'text' => 'add_payment',
                     'url'  => 'payments/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => 'payment_create',
                 ],
             ],
         ],
@@ -338,44 +356,55 @@ return [
             'text'    => 'expenses',
             'url'     => 'expenses/*',
             'icon'    => 'fas fa-fw fa-money-bill',
+            'can' => 'payment_access',
             'submenu' => [
                 [
                     'text' => 'all_expenses',
                     'url'  => 'expenses',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => 'payment_show',
                 ],
                 [
                     'text' => 'add_expense',
                     'url'  => 'expenses/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => 'payment_create',
                 ],
             ],
         ],
-        ['header' => 'administartion'],
+        [
+            'header' => 'administartion',
+            'can' => 'report_access',
+        ],
         [
             'text'        => 'reports',
             'url'         => 'reports',
             'icon'        => 'fas fa-fw fa-receipt',
+            'can' => 'report_access',
         ],
         [
             'text'        => 'transactions',
             'url'         => 'transactions',
             'icon'        => 'fas fa-fw fa-file-invoice',
+            'can' => 'transaction_access',
         ],
         [
             'text'    => 'users',
             'url'     => 'useraccount/*',
             'icon'    => 'fas fa-fw fa-users-cog',
+            'can' => 'user_management_access',
             'submenu' => [
                 [
                     'text' => 'all_users',
                     'url'  => 'useraccount',
                     'icon'    => 'fas fa-fw fa-list',
+                    'can' => '',
                 ],
                 [
                     'text' => 'add_user',
                     'url'  => 'useraccount/create',
                     'icon'    => 'fas fa-fw fa-plus-square',
+                    'can' => '',
                 ],
             ],
         ],

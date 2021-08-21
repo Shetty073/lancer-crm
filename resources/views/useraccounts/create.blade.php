@@ -7,11 +7,14 @@
 @stop
 
 @section('content')
-    <p>Form</p>
+    <form method="post" action="{{ route('useraccounts.store') }}" enctype="multipart/form-data">
+        @include('useraccounts.form')
+    </form>
 @stop
 
 @section('css')
 @stop
 
 @section('js')
+    <script src="{{ asset('js/s2.js') }}"></script>
 @stop

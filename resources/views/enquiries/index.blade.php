@@ -61,8 +61,10 @@
                                         href="{{ route('enquiries.edit', ['id' => $enquiry->id]) }}">Edit</a>
                                     @endcan
                                     @can('client_create')
+                                    @if(!$enquiry->is_lost && $enquiry->enquiry_status->id < 4)
                                     <a class="dropdown-item text-success"
                                         href="{{ route('enquiries.close', ['id' => $enquiry->id]) }}">Close Deal</a>
+                                    @endif
                                     @endcan
                                     @can('enquiry_delete')
                                     <div class="dropdown-divider"></div>

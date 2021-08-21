@@ -87,12 +87,6 @@ class PermissionSeeder extends Seeder
         // Chief Executive role
         $executive = Role::create(['name' => 'Chief Executive']);
         $executivePermissions = [
-            'user_create',
-            'user_edit',
-            'user_show',
-            'user_delete',
-            'user_access',
-
             'enquiry_create',
             'enquiry_edit',
             'enquiry_show',
@@ -134,11 +128,6 @@ class PermissionSeeder extends Seeder
         // Executive role
         $executive = Role::create(['name' => 'Executive']);
         $executivePermissions = [
-            'user_create',
-            'user_edit',
-            'user_show',
-            'user_access',
-
             'enquiry_create',
             'enquiry_edit',
             'enquiry_show',

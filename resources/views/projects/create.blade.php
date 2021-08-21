@@ -7,7 +7,9 @@
 @stop
 
 @section('content')
-    <p>Form</p>
+    <form method="post" action="{{ route('projects.store') }}">
+        @include('projects.form')
+    </form>
 @stop
 
 @section('css')
