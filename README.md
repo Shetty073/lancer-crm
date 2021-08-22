@@ -2,6 +2,22 @@
 
  Laravel based CRM for real estate channel partners for client management.
 
+## Features
+
+* Clean and simple UI
+* Role based access
+
+## Tech used
+
+* Laravel 8
+* Admin LTE + Bootstrap 4.6
+
+## Future scope
+
+* Complete dashboard
+* Complete email integration
+* add REST API
+
 ## Screenshots
 
 ![Screen 0](screens/0.png)
