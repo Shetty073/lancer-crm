@@ -18,7 +18,11 @@ class DashboardController extends Controller
         // for top card shelf
         $no_of_enquiries_this_month = Enquiry::latest()->whereDate('created_at', '>', Carbon::now()->subMonth())->count();
         $no_of_clients_this_month = Client::latest()->whereDate('created_at', '>', Carbon::now()->subMonth())->count();
-        $conversion_ratio = round($no_of_enquiries_this_month/$no_of_clients_this_month, 2);
+        if($no_of_clients_this_month > 0) {
+            $conversion_ratio = round($no_of_enquiries_this_month/$no_of_clients_this_month, 2);
+        } else {
+            $conversion_ratio = 0;
+        }
 
         $amount_earned_this_month = Payment::latest()->whereDate('created_at', '>', Carbon::now()->subMonth())->whereNotNull('date_of_payment')->sum('amount');
         $amount_earned_this_month = Utilities::numberReadableIndianFormat($amount_earned_this_month);
