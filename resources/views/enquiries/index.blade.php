@@ -28,6 +28,7 @@
                         <th class="text-uppercase" scope="col">Contact No.</th>
                         <th class="text-uppercase" scope="col">Subject</th>
                         <th class="text-uppercase" scope="col">Email</th>
+                        <th class="text-uppercase" scope="col">Date</th>
                         <th class="text-uppercase" scope="col">Status</th>
                         <th class="text-uppercase" scope="col">Actions</th>
                     </tr>
@@ -37,9 +38,26 @@
                     <tr>
                         <td>{{ $enquiry->id }}</td>
                         <td>{{ $enquiry->name }}</td>
-                        <td>{{ $enquiry->contact_no }}</td>
+                        <td>
+                            {{ $enquiry->contact_no }}
+                            <?php
+                                $whatsapp_no = $enquiry->contact_no;
+                                if(str_starts_with($whatsapp_no, '+')) {
+                                    $whatsapp_no = substr($whatsapp_no, 1);
+                                }
+                            ?>
+                            <a href="https://wa.me/{{ $whatsapp_no }}"
+                               class="btn btn-success btn-sm mx-2 d-xs-block d-sm-block d-md-none">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="tel:{{ $enquiry->contact_no }}"
+                               class="btn btn-primary btn-sm mx-2 d-xs-block d-sm-block d-md-none">
+                                <i class="fas fa-phone"></i>
+                            </a>
+                        </td>
                         <td>{{ $enquiry->subject }}</td>
                         <td>{{ $enquiry->email }}</td>
+                        <td>{{ $enquiry->created_at->format('d-M-Y') }}</td>
                         <td>
                             <span class="{{ App\Lancer\Utilities::getEnquiryStatusStyle($enquiry->enquiry_status->id) }}">
                                 {{ $enquiry->enquiry_status->status }}
