@@ -54,7 +54,7 @@ class UserAccountController extends Controller
             $role = Role::findorfail($request->input('role'));
 
             $user = User::create([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'email' => $request->input('email'),
                 'password' => '',
             ]);
@@ -131,7 +131,7 @@ class UserAccountController extends Controller
             $user = User::findorfail($id);
 
             $user->update([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'email' => $request->input('email'),
                 'password' => '',
             ]);

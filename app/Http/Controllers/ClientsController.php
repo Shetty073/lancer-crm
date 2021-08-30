@@ -56,7 +56,7 @@ class ClientsController extends Controller
         DB::beginTransaction();
         try {
             $client = Client::create([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'business_name' => $request->input('business_name'),
                 'email' => $request->input('email'),
                 'contact_no' => $request->input('contact_no'),
@@ -153,7 +153,7 @@ class ClientsController extends Controller
         try {
             $client = Client::findorfail($id);
             $client->update([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'business_name' => $request->input('business_name'),
                 'email' => $request->input('email'),
                 'contact_no' => $request->input('contact_no'),

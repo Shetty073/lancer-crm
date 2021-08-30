@@ -81,7 +81,7 @@ class EnquiriesController extends Controller
         DB::beginTransaction();
         try {
             $enquiry = Enquiry::create([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'business_name' => $request->input('business_name'),
                 'email' => $request->input('email'),
                 'contact_no' => $request->input('contact_no'),
@@ -153,7 +153,7 @@ class EnquiriesController extends Controller
                 }
 
                 $enquiry = Enquiry::create([
-                    'name' => $name,
+                    'name' => ucwords($name),
                     'contact_no' => $contact_no,
                     'subject' => 'Lead generated automatically from fb campaign',
                 ]);
@@ -242,7 +242,7 @@ class EnquiriesController extends Controller
         try {
             $enquiry = Enquiry::where('id', $id)->first();
             $enquiry->update([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'business_name' => $request->input('business_name'),
                 'email' => $request->input('email'),
                 'contact_no' => $request->input('contact_no'),

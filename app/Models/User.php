@@ -50,6 +50,15 @@ class User extends Authenticatable
         return explode(' ', $this->name)[0];
     }
 
+    public function adminlte_image()
+    {
+        if($this->photo_url == null or $this->photo_url == "") {
+            return 'https://i.pravatar.cc/150?u=' . $this->email;
+        } else {
+            return asset('storage/profile_picture/' . $this->photo_url);
+        }
+    }
+
     // mutator for hashing password
     public function setPasswordAttribute($password)
     {

@@ -47,7 +47,7 @@ class ProjectsController extends Controller
         DB::beginTransaction();
         try {
             Project::create([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'details' => $request->input('details'),
             ]);
         } catch (Exception $e) {
@@ -105,7 +105,7 @@ class ProjectsController extends Controller
         try {
             $project = Project::findorfail($id);
             $project->update([
-                'name' => $request->input('name'),
+                'name' => ucwords($request->input('name')),
                 'details' => $request->input('details'),
             ]);
         } catch (Exception $e) {

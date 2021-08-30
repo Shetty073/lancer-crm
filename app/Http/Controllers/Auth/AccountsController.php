@@ -72,7 +72,7 @@ class AccountsController extends Controller
         $user = User::findorfail($id);
 
         $user->update([
-            'name' => $request->input('name'),
+            'name' => ucwords($request->input('name')),
             'email' => $request->input('email'),
         ]);
 
