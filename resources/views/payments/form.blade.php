@@ -41,7 +41,7 @@
 <div class="row">
     <div class="form-group col-sm-3">
         <label class="text-capitalize" for="remark">Remark</label>
-        <input type="text" class="form-control text-capitalize" id="remark" name="remark" placeholder="Remark"
+        <input type="text" class="form-control" id="remark" name="remark" placeholder="Remark"
         value="@if(isset($payment)){{ $payment->remark }}@else{{ old('remark') }}@endif">
     </div>
 </div>
