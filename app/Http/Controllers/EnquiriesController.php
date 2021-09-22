@@ -180,6 +180,7 @@ class EnquiriesController extends Controller
 
     public function storePpcLead(Request $request)
     {
+        $redirectUrl = $request->input('redirect');
         DB::beginTransaction();
         try {
             $enquiry = Enquiry::create([
@@ -205,7 +206,7 @@ class EnquiriesController extends Controller
         }
         DB::commit();
 
-        return back();
+        return redirect($redirectUrl);
     }
 
     /**
