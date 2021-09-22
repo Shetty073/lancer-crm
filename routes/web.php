@@ -39,8 +39,13 @@ Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
 
 // facebook leads retrieval route
 Route::group(['prefix' => '/fb'], function () {
-    Route::get('/webhook', [EnquiriesController::class, 'retrievefbleadwebhook'])->name('enquiries.getfbleadwebhook');
-    Route::post('/webhook', [EnquiriesController::class, 'retrievefbleadwebhook'])->name('enquiries.postfbleadwebhook');
+    Route::get('/webhook', [EnquiriesController::class, 'storeFbLead'])->name('enquiries.storeFbLead');
+    Route::post('/webhook', [EnquiriesController::class, 'storeFbLead'])->name('enquiries.storeFbLead');
+});
+
+// ppc leads retrieval route
+Route::group(['prefix' => '/ppc'], function () {
+    Route::post('/store', [EnquiriesController::class, 'storePpcLead'])->name('enquiries.storePpcLead');
 });
 
 // enquiries routes

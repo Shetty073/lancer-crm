@@ -112,7 +112,7 @@ class EnquiriesController extends Controller
         return redirect(route('enquiries.index'));
     }
 
-    public function retrievefbleadwebhook(Request $request)
+    public function storeFbLead(Request $request)
     {
         if($request->isMethod('get')) {
             $challenge = $request->hub_challenge;
@@ -176,6 +176,36 @@ class EnquiriesController extends Controller
             DB::commit();
 
         }
+    }
+
+    public function storePpcLead(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $enquiry = Enquiry::create([
+                'name' => ucwords($request->input('name')),
+                'contact_no' => $request->input('phone'),
+                'subject' => 'Lead generated automatically from fb campaign',
+            ]);
+
+            $status = EnquiryStatus::where('id', 1)->first();
+            $enquiry->enquiry_status()->associate($status);
+            $enquiry->saveQuietly();
+
+            // Send email to sales team regarding the new lead
+            $data = [
+                'enquiry' => $enquiry,
+            ];
+            Mail::send('emails.newppclead', $data, function($message) use ($enquiry) {
+                $message->to(Utilities::SALES_EMAIL, Utilities::SALES_RECEIVER_NAME)->subject('New lead from facebook ad campaign');
+            });
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error(print_r($e, true));
+        }
+        DB::commit();
+
+        return redirect(Utilities::WEB_SITE_URL);
     }
 
     /**

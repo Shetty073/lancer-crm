@@ -7,6 +7,7 @@ class Utilities
     public const CURRENCY_SYMBOL = '₹';
     public const SALES_EMAIL = 'sales@proprays.com';
     public const SALES_RECEIVER_NAME = 'Proprays Sales';
+    public const WEB_SITE_URL = 'https://proprays.com';
 
     public static function getLeadDetailsEndpoint($leadgen_id): string
     {
