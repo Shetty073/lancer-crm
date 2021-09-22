@@ -39,7 +39,7 @@ Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
 
 // facebook leads retrieval route
 Route::group(['prefix' => '/fb'], function () {
-    Route::get('/webhook', [EnquiriesController::class, 'storeFbLead'])->name('enquiries.storeFbLead');
+    Route::get('/webhook', [EnquiriesController::class, 'storeFbLead'])->name('enquiries.fbLeadHook');
     Route::post('/webhook', [EnquiriesController::class, 'storeFbLead'])->name('enquiries.storeFbLead');
 });
 
