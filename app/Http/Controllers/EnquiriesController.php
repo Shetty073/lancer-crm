@@ -155,7 +155,7 @@ class EnquiriesController extends Controller
                 $enquiry = Enquiry::create([
                     'name' => ucwords($name),
                     'contact_no' => $contact_no,
-                    'subject' => 'Lead generated automatically from fb campaign',
+                    'subject' => 'FB Lead',
                 ]);
 
                 $status = EnquiryStatus::where('id', 1)->first();
@@ -185,7 +185,7 @@ class EnquiriesController extends Controller
             $enquiry = Enquiry::create([
                 'name' => ucwords($request->input('name')),
                 'contact_no' => $request->input('phone'),
-                'subject' => 'Lead generated automatically from fb campaign',
+                'subject' => 'PPC Lead',
             ]);
 
             $status = EnquiryStatus::where('id', 1)->first();
@@ -197,7 +197,7 @@ class EnquiriesController extends Controller
                 'enquiry' => $enquiry,
             ];
             Mail::send('emails.newppclead', $data, function($message) use ($enquiry) {
-                $message->to(Utilities::SALES_EMAIL, Utilities::SALES_RECEIVER_NAME)->subject('New lead from facebook ad campaign');
+                $message->to(Utilities::SALES_EMAIL, Utilities::SALES_RECEIVER_NAME)->subject('New PPC Lead');
             });
         } catch (Exception $e) {
             DB::rollBack();
@@ -205,7 +205,7 @@ class EnquiriesController extends Controller
         }
         DB::commit();
 
-        return redirect(Utilities::WEB_SITE_URL);
+        return back();
     }
 
     /**
