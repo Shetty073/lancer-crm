@@ -11,11 +11,11 @@
         <div class="col-sm-3">
             <div class="card px-3 py-1 bg-primary text-white" style="height: 120px;">
                 <span class="ml-auto">Conversion Ratio</span>
-                <div class="row">
-                    <span style="font-size: 55px; opacity: 0.40;">
+                <div class="row mt-4">
+                    <span style="font-size: 40px; opacity: 0.40;">
                         <i class="fas fa-fw fa-divide"></i>
                     </span>
-                    <span class="ml-auto" style="font-size: 50px;">
+                    <span class="ml-auto" style="font-size: 40px;">
                         {{ $conversion_ratio }}
                     </span>
                 </div>
@@ -24,11 +24,11 @@
         <div class="col-sm-3">
             <div class="card px-3 py-1 bg-success text-white" style="height: 120px;">
                 <span class="ml-auto">Monthly Earnings</span>
-                <div class="row">
-                    <span style="font-size: 55px; opacity: 0.40;">
+                <div class="row mt-4">
+                    <span style="font-size: 40px; opacity: 0.40;">
                         <i class="fas fa-fw fa-piggy-bank"></i>
                     </span>
-                    <span class="ml-auto" style="font-size: 50px;">
+                    <span class="ml-auto" style="font-size: 40px;">
                         {{ App\Lancer\Utilities::CURRENCY_SYMBOL }} {{ $amount_earned_this_month }}
                     </span>
                 </div>
@@ -37,11 +37,11 @@
         <div class="col-sm-3">
             <div class="card px-3 py-1 bg-danger text-white" style="height: 120px;">
                 <span class="ml-auto">Monthly Expenses</span>
-                <div class="row">
-                    <span style="font-size: 55px; opacity: 0.40;">
+                <div class="row mt-4">
+                    <span style="font-size: 40px; opacity: 0.40;">
                         <i class="fas fa-fw fa-money-bill"></i>
                     </span>
-                    <span class="ml-auto" style="font-size: 50px;">
+                    <span class="ml-auto" style="font-size: 40px;">
                         {{ App\Lancer\Utilities::CURRENCY_SYMBOL }} {{ $expense_paid_this_month }}
                     </span>
                 </div>
@@ -50,11 +50,11 @@
         <div class="col-sm-3">
             <div class="card px-3 py-1 bg-warning text-white" style="height: 120px;">
                 <span class="ml-auto">Total Due</span>
-                <div class="row">
-                    <span style="font-size: 55px; opacity: 0.40;">
+                <div class="row mt-4">
+                    <span style="font-size: 40px; opacity: 0.40;">
                         <i class="fas fa-fw fa-cash-register"></i>
                     </span>
-                    <span class="ml-auto" style="font-size: 50px;">
+                    <span class="ml-auto" style="font-size: 40px;">
                         {{ App\Lancer\Utilities::CURRENCY_SYMBOL }} {{ $total_due }}
                     </span>
                 </div>
