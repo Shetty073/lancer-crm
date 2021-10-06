@@ -8,14 +8,24 @@
 
 @section('content')
     <div class="card px-3 py-2">
-        @can('enquiry_create')
         <div class="my-3">
-            <a class="btn btn-success text-uppercase float-right" href="{{ route('enquiries.create') }}">
-                <i class="fas fa-plus fa-fw"></i>
-                <span class="big-btn-text">Add New Enquiry</span>
-            </a>
+            @can('enquiry_create')
+                <a class="btn btn-success text-uppercase float-right ml-2" href="{{ route('enquiries.create') }}">
+                    <i class="fas fa-plus fa-fw"></i>
+                    <span class="big-btn-text">Add New Enquiry</span>
+                </a>
+            @endcan
+            <div class="dropdown float-right">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ $filter === 'all' ? 'All' : ($filter === 'active' ? 'Active' : 'Lost') }}
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{{ route('enquiries.filter', ['filter' => 'all']) }}">All</a>
+                    <a class="dropdown-item" href="{{ route('enquiries.filter', ['filter' => 'active']) }}">Active</a>
+                    <a class="dropdown-item" href="{{ route('enquiries.filter', ['filter' => 'lost']) }}">Lost</a>
+                </div>
+            </div>
         </div>
-        @endcan
         <input type="text" id="searchBox" placeholder="🔍 Search the table below">
         <br>
 

@@ -32,14 +32,36 @@ class EnquiriesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, $filter=null)
     {
         // Reference to the Utilities class
         $utilities = $this->utilities;
 
-        $enquiries = Enquiry::paginate(20);
+        if($filter === null) {
+            if($request->session()->has('filter')) {
+                $filter = session('filter');
+            }
+        }
 
-        return view('enquiries.index', compact('enquiries', 'utilities'));
+        switch ($filter) {
+            case 'active':
+                session(['filter' => $filter]);
+                $enquiries = Enquiry::where('is_lost', false)->latest()->paginate(20);
+                break;
+
+            case 'lost':
+                session(['filter' => $filter]);
+                $enquiries = Enquiry::where('is_lost', true)->latest()->paginate(20);
+                break;
+
+            default:
+                $filter = 'all';
+                $enquiries = Enquiry::latest()->paginate(20);
+                break;
+        }
+
+
+        return view('enquiries.index', compact('enquiries', 'utilities', 'filter'));
     }
 
     /**
