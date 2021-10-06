@@ -40,6 +40,7 @@ class EnquiriesController extends Controller
         if($filter === null) {
             if($request->session()->has('filter')) {
                 $filter = session('filter');
+//                dd($filter);
             }
         }
 
@@ -56,6 +57,7 @@ class EnquiriesController extends Controller
 
             default:
                 $filter = 'all';
+                session(['filter' => $filter]);
                 $enquiries = Enquiry::latest()->paginate(20);
                 break;
         }
