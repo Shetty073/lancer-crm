@@ -51,6 +51,7 @@ Route::group(['prefix' => '/ppc'], function () {
 // enquiries routes
 Route::group(['prefix' => '/enquiries', 'middleware' => ['auth', 'can:enquiry_access']], function () {
     Route::get('/', [EnquiriesController::class, 'index'])->name('enquiries.index');
+    Route::get('/filter/{filter?}', [EnquiriesController::class, 'index'])->name('enquiries.filter');
     Route::get('/{id}/show', [EnquiriesController::class, 'show'])->name('enquiries.show')->middleware('can:enquiry_show');
     Route::get('/create', [EnquiriesController::class, 'create'])->name('enquiries.create')->middleware('can:enquiry_create');
     Route::post('/store', [EnquiriesController::class, 'store'])->name('enquiries.store')->middleware('can:enquiry_create');
