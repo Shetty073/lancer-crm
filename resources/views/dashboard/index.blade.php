@@ -186,7 +186,7 @@
                                             <td>{{ $due->payer }}</td>
                                             <td>{{ $due->amount }}</td>
                                             <td>{{ $due->remark }}</td>
-                                            <td>{{ $due->due_date->format('d-M-Y @ h:i a') }}</td>
+                                            <td>{{ $due->due_date->format('d-M-Y') }}</td>
                                         </tr>
                                     @endforeach
                                 @else
@@ -218,8 +218,8 @@
                                         <tr>
                                             <td>{{ $due->payer }}</td>
                                             <td>{{ $due->amount }}</td>
-                                            <td>{{ $followup->remark }}</td>
-                                            <td>{{ $followup->date_time->format('d-M-Y @ h:i a') }}</td>
+                                            <td>{{ $due->remark }}</td>
+                                            <td>{{ $due->due_date->format('d-M-Y') }}</td>
                                         </tr>
                                     @endforeach
                                 @else
