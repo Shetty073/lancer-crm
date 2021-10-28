@@ -9,6 +9,7 @@ use App\Models\Enquiry;
 use App\Models\EnquiryStatus;
 use App\Models\PaymentMode;
 use App\Models\Project;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,28 +41,44 @@ class EnquiriesController extends Controller
         if($filter === null) {
             if($request->session()->has('filter')) {
                 $filter = session('filter');
-//                dd($filter);
             }
         }
 
         switch ($filter) {
             case 'active':
                 session(['filter' => $filter]);
-                $enquiries = Enquiry::where('is_lost', false)->latest()->paginate(20);
+
+                if(auth()->user()->hasRole(['Admin', 'Telecaller'])) {
+                    $enquiries = Enquiry::where('is_lost', false)->latest()->paginate(20);
+                } else {
+                    $enquiries = Enquiry::where('is_lost', false)->where('assigned_to', auth()->user()->id)->latest()->paginate(20);
+                }
+
                 break;
 
             case 'lost':
                 session(['filter' => $filter]);
-                $enquiries = Enquiry::where('is_lost', true)->latest()->paginate(20);
+
+                if(auth()->user()->hasRole(['Admin', 'Telecaller'])) {
+                    $enquiries = Enquiry::where('is_lost', true)->latest()->paginate(20);
+                } else {
+                    $enquiries = Enquiry::where('is_lost', true)->where('assigned_to', auth()->user()->id)->latest()->paginate(20);
+                }
+
                 break;
 
             default:
                 $filter = 'all';
                 session(['filter' => $filter]);
-                $enquiries = Enquiry::latest()->paginate(20);
+
+                if(auth()->user()->hasRole(['Admin', 'Telecaller'])) {
+                    $enquiries = Enquiry::latest()->paginate(20);
+                } else {
+                    $enquiries = Enquiry::where('assigned_to', auth()->user()->id)->latest()->paginate(20);
+                }
+
                 break;
         }
-
 
         return view('enquiries.index', compact('enquiries', 'utilities', 'filter'));
     }
@@ -77,8 +94,9 @@ class EnquiriesController extends Controller
         $projects = Project::all();
         $configurations = Configuration::all();
         $budget_ranges = BudgetRange::all();
+        $users = User::role(['Chief Executive' , 'Executive'])->orderby('no_of_enquiries_assigned', 'ASC')->get();
 
-        return view('enquiries.create', compact('enquiry_statuses', 'projects', 'configurations', 'budget_ranges'));
+        return view('enquiries.create', compact('enquiry_statuses', 'projects', 'configurations', 'budget_ranges', 'users'));
     }
 
     /**
@@ -123,6 +141,12 @@ class EnquiriesController extends Controller
 
             $budget_range = BudgetRange::where('id', $request->input('budget_range'))->first();
             $enquiry->budget_range()->associate($budget_range);
+
+            $assignee = User::where('id', $request->input('assigned_to'))->first();
+            $enquiry->assignedTo()->associate($assignee);
+            $assignee->update([
+                'no_of_enquiries_assigned' => ($assignee->no_of_enquiries_assigned + 1),
+            ]);
 
             $enquiry->save();
         } catch (Exception $e) {
@@ -273,8 +297,9 @@ class EnquiriesController extends Controller
         $projects = Project::all();
         $configurations = Configuration::all();
         $budget_ranges = BudgetRange::all();
+        $users = User::role(['Chief Executive' , 'Executive'])->get();
 
-        return view('enquiries.edit', compact('enquiry', 'enquiry_statuses', 'projects', 'configurations', 'budget_ranges'));
+        return view('enquiries.edit', compact('enquiry', 'enquiry_statuses', 'projects', 'configurations', 'budget_ranges', 'users'));
     }
 
     /**
@@ -296,6 +321,12 @@ class EnquiriesController extends Controller
         DB::beginTransaction();
         try {
             $enquiry = Enquiry::where('id', $id)->first();
+
+            $previous_assignee = User::where('id', $enquiry->assignedTo->id)->first();
+            $previous_assignee->update([
+                'no_of_enquiries_assigned' => ($previous_assignee->no_of_enquiries_assigned - 1),
+            ]);
+
             $enquiry->update([
                 'name' => ucwords($request->input('name')),
                 'business_name' => $request->input('business_name'),
@@ -315,6 +346,12 @@ class EnquiriesController extends Controller
 
             $budget_range = BudgetRange::where('id', $request->input('budget_range'))->first();
             $enquiry->budget_range()->associate($budget_range);
+
+            $assignee = User::where('id', $request->input('assigned_to'))->first();
+            $enquiry->assignedTo()->associate($assignee);
+            $assignee->update([
+                'no_of_enquiries_assigned' => ($assignee->no_of_enquiries_assigned + 1),
+            ]);
 
             $enquiry->save();
         } catch (Exception $e) {
@@ -362,6 +399,11 @@ class EnquiriesController extends Controller
         $enquiry->enquiry_status()->associate($status);
         $enquiry->save();
 
+        $previous_assignee = User::where('id', $enquiry->assignedTo->id)->first();
+        $previous_assignee->update([
+            'no_of_enquiries_assigned' => ($previous_assignee->no_of_enquiries_assigned - 1),
+        ]);
+
         $projects = Project::all();
         $payment_modes = PaymentMode::all();
         $configurations = Configuration::all();
@@ -383,6 +425,10 @@ class EnquiriesController extends Controller
         $status = EnquiryStatus::where('id', 4)->first();
         $enquiry->update([
             'is_lost' => true,
+        ]);
+        $previous_assignee = User::where('id', $enquiry->assignedTo->id)->first();
+        $previous_assignee->update([
+            'no_of_enquiries_assigned' => ($previous_assignee->no_of_enquiries_assigned - 1),
         ]);
         $enquiry->enquiry_status()->associate($status);
         $enquiry->lost_remark = $data->lost_remark;

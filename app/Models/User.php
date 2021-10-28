@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'photo_url',
+        'no_of_enquiries_assigned',
     ];
 
     /**
@@ -48,6 +49,12 @@ class User extends Authenticatable
     public function firstName()
     {
         return explode(' ', $this->name)[0];
+    }
+
+    public function displayName()
+    {
+        $full_name = explode(' ', $this->name);
+        return $full_name[0] . ' ' . ucfirst(substr(end($full_name), 0, 1)) . '.';
     }
 
     public function adminlte_image()

@@ -60,17 +60,17 @@
                         <span>Email</span>:
                         <span class="pl-1 font-weight-bolder">{{ $enquiry->email }}</span>
                     </li>
-                </ul>
-
-            </div>
-            <div class="col-6">
-                <ul class="list-group">
                     <li class="list-group-item">
                         <span>Subject</span>:
                         <span class="pl-1 font-weight-bolder">
                             {{ $enquiry->subject }}
                         </span>
                     </li>
+                </ul>
+
+            </div>
+            <div class="col-6">
+                <ul class="list-group">
                     <li class="list-group-item">
                         <span>Project</span>:
                         <span class="pl-1 font-weight-bolder">
@@ -99,6 +99,12 @@
                         <span>Status</span>:
                         <span class="pl-1 font-weight-bolder {{ App\Lancer\Utilities::getEnquiryStatusStyle($enquiry->enquiry_status->id) }}">
                             {{ $enquiry->enquiry_status->status }}
+                        </span>
+                    </li>
+                    <li class="list-group-item">
+                        <span>Assigned To</span>:
+                        <span class="pl-1 font-weight-bolder">
+                            {{ $enquiry->assignedTo->name }}
                         </span>
                     </li>
                 </ul>

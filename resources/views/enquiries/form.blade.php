@@ -74,6 +74,19 @@
         <textarea class="form-control" id="subject" name="subject" placeholder="Subject"
         required>@if(isset($enquiry)){{ $enquiry->subject }}@else{{ old('subject') }}@endif</textarea>
     </div>
+
+    @if(auth()->user()->hasRole('Admin'))
+        <div class="form-group col-sm-3">
+            <label class="text-capitalize" for="assigned_to">Assign To</label>
+            <select class="form-control js-example-basic-single" id="assigned_to" name="assigned_to" required>
+                @foreach ($users as $user)
+                    <option value="{{ $user->id }}" @if(isset($enquiry)) @if($user->id == $enquiry->assignedTo->id) selected @endif @endif>{{ $user->name }} - {{ $user->no_of_enquiries_assigned }}</option>
+                @endforeach
+            </select>
+        </div>
+    @else
+        <input type="hidden" name="assigned_to" value="{{ auth()->user()->id }}" />
+    @endif
 </div>
 
 <div class="form-group">

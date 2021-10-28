@@ -37,8 +37,8 @@
                         <th class="text-uppercase" scope="col">Name</th>
                         <th class="text-uppercase" scope="col">Contact No.</th>
                         <th class="text-uppercase" scope="col">Subject</th>
-                        <th class="text-uppercase" scope="col">Email</th>
                         <th class="text-uppercase" scope="col">Date</th>
+                        <th class="text-uppercase" scope="col">Assigned To</th>
                         <th class="text-uppercase" scope="col">Status</th>
                         <th class="text-uppercase" scope="col">Actions</th>
                     </tr>
@@ -66,8 +66,8 @@
                             </a>
                         </td>
                         <td>{{ $enquiry->subject }}</td>
-                        <td>{{ $enquiry->email }}</td>
                         <td>{{ $enquiry->created_at->format('d-M-Y') }}</td>
+                        <td>{{ $enquiry->assignedTo->displayName() }}</td>
                         <td>
                             <span class="{{ App\Lancer\Utilities::getEnquiryStatusStyle($enquiry->enquiry_status->id) }}">
                                 {{ $enquiry->enquiry_status->status }}
