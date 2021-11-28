@@ -234,20 +234,28 @@ class EnquiriesController extends Controller
             $enquiry = Enquiry::create([
                 'name' => ucwords($request->input('name')),
                 'contact_no' => $request->input('phone'),
-                'subject' => 'PPC Lead',
+                'subject' => $request->input('subject'),
             ]);
+
+            $assignee = User::role(['Chief Executive' , 'Executive'])->orderby('no_of_enquiries_assigned', 'ASC')->first();
 
             $status = EnquiryStatus::where('id', 1)->first();
             $enquiry->enquiry_status()->associate($status);
+            $enquiry->assignedTo()->associate($assignee);
+            $assignee->update([
+                'no_of_enquiries_assigned' => ($assignee->no_of_enquiries_assigned + 1),
+            ]);
             $enquiry->saveQuietly();
 
             // Send email to sales team regarding the new lead
             $data = [
                 'enquiry' => $enquiry,
             ];
-            Mail::send('emails.newppclead', $data, function($message) use ($enquiry) {
-                $message->to(Utilities::SALES_EMAIL, Utilities::SALES_RECEIVER_NAME)->subject('New PPC Lead');
+
+            Mail::send('emails.newppclead', $data, function($message) use ($assignee, $request) {
+                $message->to($assignee->email, $assignee->name)->subject($request->input('subject'));
             });
+
         } catch (Exception $e) {
             DB::rollBack();
             Log::error(print_r($e, true));
