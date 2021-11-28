@@ -233,14 +233,14 @@ class EnquiriesController extends Controller
         try {
             $enquiry = Enquiry::create([
                 'name' => ucwords($request->input('name')),
-                'contact_no' => $request->input('phone'),
+                'contact_no' => $request->input('contact_no'),
                 'subject' => $request->input('subject'),
             ]);
 
-            $assignee = User::role(['Chief Executive' , 'Executive'])->orderby('no_of_enquiries_assigned', 'ASC')->first();
-
             $status = EnquiryStatus::where('id', 1)->first();
             $enquiry->enquiry_status()->associate($status);
+
+            $assignee = User::role(['Chief Executive' , 'Executive'])->orderby('no_of_enquiries_assigned', 'ASC')->first();
             $enquiry->assignedTo()->associate($assignee);
             $assignee->update([
                 'no_of_enquiries_assigned' => ($assignee->no_of_enquiries_assigned + 1),
